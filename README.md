@@ -1,15 +1,13 @@
-![](EXARL.png)
 
-# Easily eXtendable Architecture for Reinforcement Learning
 
-A scalable software framework for reinforcement learning environments and agents/policies used for the Design and Control applications
+# miniRL
 
-[![Build Status](https://travis-ci.com/exalearn/EXARL.svg?token=nVtzNrBfRo4qpVpEQP21&branch=develop)](https://travis-ci.com/exalearn/EXARL)
+A proxy app for EXARL
+
 
 ## Software Requirement
 
 - Python 3.7
-- The EXARL framework is built on [OpenAI Gym](https://gym.openai.com)
 - Additional python packages are defined in the setup.py
 - This document assumes you are running at the top directory
 
@@ -17,7 +15,6 @@ A scalable software framework for reinforcement learning environments and agents
 
 ```
 ├── setup.py                          : Python setup file with requirements files
-├── scripts                           : folder containing RL steering scripts
 ├── config                	          : folder containing configurations
     └── agent_cfg                     : agent configuration folder
     └── model_cfg                     : model configuration folder
@@ -26,7 +23,6 @@ A scalable software framework for reinforcement learning environments and agents
     └── learner_cfg.json              : learner configuration
 ├── exarl                	            : folder with EXARL code
     └── __init__.py                   : make base classes visible
-    └── mpi_settings.py               : MPI settings
     ├── base         	                : folder containing EXARL base classes
         └── __init__.py               : make base classes visible
         └── agent_base.py             : agent base class
@@ -66,14 +62,11 @@ A scalable software framework for reinforcement learning environments and agents
 - Pull code from repo
 
 ```
-git clone --recursive https://github.com/exalearn/EXARL.git
-cd EXARL
-git lfs install # install git lfs if you haven't
-git lfs fetch
-git lfs pull
+git clone --recursive https://github.com/lanl/miniRL.git
+cd miniRL
 ```
 
-- Install dependencies for EXARL:
+- Install dependencies for miniRL:
 
 ```
 pip install -e . --user
@@ -88,8 +81,8 @@ following directories:
 2. ~/.exarl/config
 3. (site-packages dir)/exarl/config
 
-If you would like to run EXARL from outside the source directory, you may
-install the config files with exarl or copy them into EXARL's config directory
+If you would like to run miniRL from outside the source directory, you may
+install the config files with exarl or copy them into miniRL's config directory
 in your home directory like so:
 
 ```console
@@ -98,23 +91,23 @@ $ cd EXARL
 $ cp config/* ~/.exarl/config
 ```
 
-## [CANDLE](https://github.com/ECP-CANDLE/Candle) functionality is built into EXARL
+## [CANDLE](https://github.com/ECP-CANDLE/Candle) functionality is built into miniRL
 
-- Add/modify the learner parameters in `EXARL/exarl/config/learner_cfg.json`\
+- Add/modify the learner parameters in `miniRL/exarl/config/learner_cfg.json`\
   E.g.:-
 
 ```
 {
     "agent": "DQN-v0",
-    "env": "ExaLearnCartpole-v1",
+    "env": "ExaCartPoleStatic-v0",
     "workflow": "async",
-    "n_episodes": 1,
+    "n_episodes": 10,
     "n_steps": 10,
     "output_dir": "./exa_results_dir"
 }
 ```
 
-- Add/modify the agent parameters in `EXARL/exarl/config/agent_cfg/<AgentName>.json`\
+- Add/modify the agent parameters in `miniRL/exarl/config/agent_cfg/<AgentName>.json`\
   E.g.:-
 
 ```
@@ -131,7 +124,7 @@ $ cp config/* ~/.exarl/config
 
 Currently, DQN agent takes either MLP or LSTM as model_type.
 
-- Add/modify the model parameters in `EXARL/exarl/config/model_cfg/<ModelName>.json`\
+- Add/modify the model parameters in `miniRL/exarl/config/model_cfg/<ModelName>.json`\
   E.g.:-
 
 ```
@@ -144,7 +137,7 @@ Currently, DQN agent takes either MLP or LSTM as model_type.
 }
 ```
 
-- Add/modify the environment parameters in `EXARL/exarl/config/env_cfg/<EnvName>.json`\
+- Add/modify the environment parameters in `miniRL/exarl/config/env_cfg/<EnvName>.json`\
   E.g.:-
 
 ```
@@ -153,7 +146,7 @@ Currently, DQN agent takes either MLP or LSTM as model_type.
 }
 ```
 
-- Add/modify the workflow parameters in `EXARL/exarl/config/workflow_cfg/<WorkflowName>.json`\
+- Add/modify the workflow parameters in `miniRL/exarl/config/workflow_cfg/<WorkflowName>.json`\
   E.g.:-
 
 ```
@@ -162,13 +155,13 @@ Currently, DQN agent takes either MLP or LSTM as model_type.
 }
 ```
 
-- Please note the agent, model, environment, and workflow configuration file (json file) name must match the agent, model, environment, and workflow ID specified in `EXARL/exarl/config/learner_cfg.json`. \
-  E.g.:- `EXARL/exarl/config/agent_cfg/DQN-v0.json`, `EXARL/exarl/config/model_cfg/MLP.json`, `EXARL/exarl/config/env_cfg/ExaCartPole-v1.json`, and `EXARL/exarl/config/workflow_cfg/async.json`
+- Please note the agent, model, environment, and workflow configuration file (json file) name must match the agent, model, environment, and workflow ID specified in `miniRL/exarl/config/learner_cfg.json`. \
+  E.g.:- `miniRL/exarl/config/agent_cfg/DQN-v0.json`, `miniRL/exarl/config/model_cfg/MLP.json`, `miniRL/exarl/config/env_cfg/ExaCartPole-v1.json`, and `miniRL/exarl/config/workflow_cfg/async.json`
 
 ## Running EXARL using MPI
 
 - Existing environment can be paired with an available agent
-- The following script is provided for convenience: `EXARL/exarl/driver/__main__.py`
+- The following script is provided for convenience: `miniRL/exarl/driver/__main__.py`
 
 ```
 from mpi4py import MPI
@@ -213,14 +206,6 @@ if rank == 0:
 mpiexec -np <num_parent_processes> python exarl/driver/__main__.py --<run_params>=<param_value>
 ```
 
-- If running a multi-process environment or agent, the communicators are available in `exarl/mpi_settings.py`.
-  E.g.:-
-
-```
-import exarl.mpi_settings as mpi_settings
-self.env_comm = mpi_settings.env_comm
-self.agent_comm = mpi_settings.agent_comm
-```
 
 ### Using parameters set in CANDLE configuration/get parameters from terminal
 
@@ -242,8 +227,8 @@ self.gamma =  cd.run_params['gamma']
 
 ## Creating custom environments
 
-- EXARL uses OpenAI gym environments
-- The ExaEnv class in `EXARL/exarl/env_base.py` inherits from OpenAI GYM Wrapper class for including added functionality.
+- miniRL uses OpenAI gym environments
+- The ExaEnv class in `miniRL/exarl/env_base.py` inherits from OpenAI GYM Wrapper class for including added functionality.
 - Environments inherit from gym.Env
 
 ```
@@ -265,17 +250,17 @@ register(
 
 - The id variable will be passed to exarl.make() to call the environment
 
-- The file `EXARL/exarl/env/env_vault/__init__.py` should include
+- The file `miniRL/exarl/env/env_vault/__init__.py` should include
 
 ```
 from exarl.envs.env_vault.foo_env import FooEnv
 ```
 
-where EXARL/exarl/envs/env_vault/foo_env.py is the file containing your envirnoment
+where miniRL/exarl/envs/env_vault/foo_env.py is the file containing your envirnoment
 
 ### Using environment written in a lower level language
 
-- The following example illustrates using the C function of computing the value of PI in EXARL \
+- The following example illustrates using the C function of computing the value of PI in miniRL \
   computePI.h:
 
 ```
@@ -382,7 +367,7 @@ if __name__ == '__main__':
 
 ## Creating custom agents
 
-- EXARL extends OpenAI gym's environment registration to agents
+- miniRL extends OpenAI gym's environment registration to agents
 - Agents inherit from exarl.ExaAgent
 
 ```
@@ -406,7 +391,7 @@ save()          # save weights to memory
 monitor()       # monitor progress of learning
 ```
 
-- Register the agent in `EXARL/exarl/agents/__init__.py`
+- Register the agent in `miniRL/exarl/agents/__init__.py`
 
 ```
 from exarl.agents.registration import register, make
@@ -419,17 +404,17 @@ register(
 
 - The id variable will be passed to exarl.make() to call the agent
 
-- The file `EXARL/exarl/agents/agent_vault/__init__.py` should include
+- The file `miniRL/exarl/agents/agent_vault/__init__.py` should include
 
 ```
 from exarl.agents.agent_vault.foo_agent import FooAgent
 ```
 
-where EXARL/agents/agent_vault/foo_agent.py is the file containing your agent
+where miniRL/agents/agent_vault/foo_agent.py is the file containing your agent
 
 ## Creating custom workflows
 
-- EXARL also extends OpenAI gym's environment registration to workflows
+- miniRL also extends OpenAI gym's environment registration to workflows
 - Workflows inherit from exarl.ExaWorkflow
 
 ```
@@ -444,7 +429,7 @@ Example:-
 run()   # run the workflow
 ```
 
-- Register the workflow in `EXARL/exarl/workflows/__init__.py`
+- Register the workflow in `miniRL/exarl/workflows/__init__.py`
 
 ```
 from exarl.agents.registration import register, make
@@ -457,22 +442,22 @@ register(
 
 - The id variable will be passed to exarl.make() to call the agent
 
-- The file `EXARL/exarl/workflows/workflow_vault/__init__.py` should include
+- The file `miniRL/exarl/workflows/workflow_vault/__init__.py` should include
 
 ```
 from exarl.workflows.workflow_vault.foo_workflow import FooWorkflow
 ```
 
-where EXARL/workflows/workflow_vault/foo_workflow.py is the file containing your workflow
+where miniRL/workflows/workflow_vault/foo_workflow.py is the file containing your workflow
 
 ## Base classes
 
-- Base classes are provided for agents, environments, workflows, and learner in the directory `EXARL/exarl/`
+- Base classes are provided for agents, environments, workflows, and learner in the directory `miniRL/exarl/`
 - Users can inherit from the correspoding agent, environment, and workflow base classes
 
 ## Debugging, Timing, and Profiling
 
-- Function decorators are provided for debugging, timing, and profiling EXARL.
+- Function decorators are provided for debugging, timing, and profiling miniRL.
 - Debugger captures the function signature and return values.
 - Timer prints execution time in seconds.
 - Either line_profiler or memory_profiler can be used for profiling the code.
