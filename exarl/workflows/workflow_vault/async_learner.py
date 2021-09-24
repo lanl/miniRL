@@ -150,7 +150,7 @@ class ASYNC(erl.ExaWorkflow):
             start = env_comm.time()
             while episode != -1:
                 # Reset variables each episode
-                workflow.env.seed(0)
+                # workflow.env.seed(0)
                 # TODO: optimize some of these variables out for env processes
                 current_state = workflow.env.reset()
                 total_reward = 0
