@@ -1,10 +1,11 @@
 from gym.envs import registration
-from gym.envs.registration import register
-import exarl.utils.candleDriver as cd
-
-
-env = cd.run_params['env']
-
+f
+om gym.envs.registration import register
+from exarl.utils.globals import ExaGlobals
+try:
+    env = ExaGlobals.lookup_params('env')
+except:
+    env = None
 
 if env == 'ExaCartPoleStatic-v0':
     register(

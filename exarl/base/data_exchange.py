@@ -8,13 +8,12 @@
 # nonexclusive, paid-up, irrevocable worldwide license in this material to reproduce, prepare
 # derivative works, distribute copies to the public, perform publicly and display publicly, and
 # to permit others to do so.
-
 import sys
 import os
 from abc import ABC, abstractmethod
 import numpy as np
 from exarl.base.comm_base import ExaComm
-from exarl.utils.introspect import introspectTrace
+# from exarl.utils.introspect import introspectTrace
 
 class ExaData(ABC):
     def __init__(self, dataType, size, comm_size=1, max_model_lag=None, name=None):
@@ -34,7 +33,6 @@ class ExaData(ABC):
         pass
 
     # TODO: Think about low and high as parameters
-    @introspectTrace()
     def get_data(self, learner_counter, low, high):
         actor_idx = np.random.randint(low=low, high=high, size=1)[0]
         batch_data = self.pop(actor_idx)

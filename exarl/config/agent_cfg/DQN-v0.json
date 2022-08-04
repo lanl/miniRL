@@ -8,6 +8,8 @@
     "tau": 0.5,
     "nactions": 10,
     "priority_scale": 0.0,
-    "mem_length": 1000,
-    "xla": "True"
+    "buffer_capacity": 1000,
+    "update_target_frequency": 1,
+    "xla": "True",
+    "model_type": "MLP"
 }

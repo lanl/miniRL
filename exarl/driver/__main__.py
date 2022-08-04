@@ -18,34 +18,29 @@
 #                             for the
 #                   UNITED STATES DEPARTMENT OF ENERGY
 #                    under Contract DE-AC05-76RL01830
-import exarl as erl
-import exarl.utils.analyze_reward as ar
 import time
-from exarl.utils.candleDriver import lookup_params
-from exarl.utils.introspect import *
 import numpy as np
 
+import exarl
+from exarl.utils.profile import ProfileConstants
+import exarl.utils.analyze_reward as ar
+
 # Create learner object and run
-exa_learner = erl.ExaLearner()
+exa_learner = exarl.ExaLearner()
 
 # MPI communicator
-comm = erl.ExaComm.global_comm
+comm = exarl.ExaComm.global_comm
 rank = comm.rank
 size = comm.size
 
-writeDir = lookup_params("introspector_dir")
-if writeDir is not None:
-    ibLoadReplacement(comm, writeDir)
-
 # Run the learner, measure time
-ib.start()
 start = time.time()
 exa_learner.run()
 elapse = time.time() - start
-ib.stop()
 
-if ibLoaded():
-    print("Rank", comm.rank, "Time = ", elapse)
+# Print duration
+if ProfileConstants.introspected():
+    print("Rank", rank, "Time = ", elapse)
 else:
     max_elapse = comm.reduce(np.float64(elapse), max, 0)
     elapse = comm.reduce(np.float64(elapse), sum, 0)
@@ -53,8 +48,6 @@ else:
         print("Average elapsed time = ", elapse / size)
         print("Maximum elapsed time = ", max_elapse)
 
+# Save rewards vs. episodes plot
 if rank == 0:
-    # Save rewards vs. episodes plot
     ar.save_reward_plot()
-
-ibWrite(writeDir)

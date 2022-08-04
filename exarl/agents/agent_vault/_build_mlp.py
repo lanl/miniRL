@@ -20,12 +20,12 @@
 #                    under Contract DE-AC05-76RL01830
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Input, Flatten
-
+from gym.spaces.utils import flatdim
 
 def build_model(self):
     # Input: state
     layers = []
-    state_input = Input(shape=(1, self.env.observation_space.shape[0]))
+    state_input = Input(shape=(flatdim(self.env.observation_space),))
     layers.append(state_input)
     length = len(self.dense)
     # for i, layer_width in enumerate(self.dense):
@@ -33,11 +33,10 @@ def build_model(self):
         layer_width = self.dense[i]
         layers.append(Dense(layer_width, activation=self.activation)(layers[-1]))
     # output layer
-    layers.append(Dense(self.env.action_space.n, activation=self.out_activation)(layers[-1]))
+    layers.append(Dense(flatdim(self.env.action_space), activation=self.out_activation)(layers[-1]))
     layers.append(Flatten()(layers[-1]))
 
     model = Model(inputs=layers[0], outputs=layers[-1])
     # model.summary()
-    print('', flush=True)
-
+    # print('', flush=True)
     return model

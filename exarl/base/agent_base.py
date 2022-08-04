@@ -30,6 +30,7 @@
 #                    under Contract DE-AC05-76RL01830
 import os
 import sys
+import pickle
 from abc import ABC, abstractmethod
 
 file_path = os.path.dirname(os.path.realpath(__file__))
@@ -37,34 +38,71 @@ lib_path = os.path.abspath(os.path.join(file_path, '..', 'candlelib'))
 sys.path.append(lib_path)
 
 class ExaAgent(ABC):
+    """Agent base class: Inherits from abstract base class for mandating
+    functionality (pure virtual functions).
+
+    """
 
     def __init__(self, **kwargs):
         pass
 
     @abstractmethod
     def get_weights(self):
+        """get target model weights
+    """
         pass
 
     @abstractmethod
-    def set_weights(self):
+    def set_weights(self, weights):
+        """set target model weights
+        """
         pass
 
     @abstractmethod
-    def train(self):
+    def train(self, batch):
+        """train the agent
+        """
         pass
 
     @abstractmethod
-    def action(self):
+    def update_target(self):
         pass
 
     @abstractmethod
-    def load(self):
-        pass
-
-    @abstractmethod
-    def save(self, results_dir):
+    def action(self, state):
+        """next action based on current state
+        """
         pass
 
     @abstractmethod
     def has_data(self):
+        """return true if agent has experiences from simulation
+        """
         pass
+
+    @abstractmethod
+    def generate_data(self):
+        pass
+
+    @abstractmethod
+    def remember(self, state, action, reward, next_state, done):
+        pass
+
+    @abstractmethod
+    def set_priorities(self, indices, loss):
+        pass
+
+    def load(self, filename):
+        weights = None
+        with open(filename, "rb") as f:
+            weights = pickle.load(f)
+        if weights is not None:
+            print("Loading from: ", filename)
+            self.set_weights(weights)
+        else:
+            print("Failed loading weights from:", filename)
+
+    def save(self, filename):
+        weights = self.get_weights()
+        with open(filename, "wb") as f:
+            pickle.dump(weights, f)

@@ -1,13 +1,13 @@
 {
     "agent": "DQN-v0",
-    "env": "CartPole-v0",
-    "workflow": "async",
+    "env": "ExaCartPoleStatic-v0",
+    "workflow": "sync",
     "n_episodes": 10,
     "n_steps": 10,
+    "model": "MLP",
     "output_dir": "./results_dir/",
     "process_per_env": 1,
-    "model_type": "LSTM",
-    "action_type": "variable",
     "log_level": [3, 3],
-    "profile": "none"
+    "log_frequency": 1,
+    "profile": "None"
 }

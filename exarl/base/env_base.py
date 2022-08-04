@@ -8,25 +8,32 @@
 # nonexclusive, paid-up, irrevocable worldwide license in this material to reproduce, prepare
 # derivative works, distribute copies to the public, perform publicly and display publicly, and
 # to permit others to do so.
-
-
-import json
 import os
-import sys
-import gym
-import time
 from gym import Wrapper
 from exarl.base.comm_base import ExaComm
 
 class ExaEnv(Wrapper):
     def __init__(self, env, **kwargs):
-
         super(ExaEnv, self).__init__(env)
+        self.env = env
+        self.env.workflow_episode = 0
+        self.env.workflow_step = 0
 
         # Use relative path not absolute
         self.base_dir = os.path.dirname(__file__)
-        print(self.base_dir)
         self.env_comm = ExaComm.env_comm
+
+    def set_episode_count(self, episode_count):
+        '''
+        Method to keep track of episode count in the env
+        '''
+        self.env.workflow_episode = episode_count
+
+    def set_step_count(self, step_count):
+        '''
+        Method to keep track of step per episode in the env
+        '''
+        self.env.workflow_step = step_count
 
     def set_results_dir(self, results_dir):
         '''

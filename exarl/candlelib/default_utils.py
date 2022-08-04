@@ -356,7 +356,9 @@ def finalize_parameters(bmk):
     # print("Configuration file: ", conffile)
     fileParameters = bmk.read_config_file(conffile)  # aux.config_file)#args.config_file)
     # Get command-line parameters
-    args = bmk.parser.parse_args()
+    # args = bmk.parser.parse_args()
+    args, extras = bmk.parser.parse_known_args()
+    print('The following arguments were not processed:', extras)
     # print ('Params:', fileParameters)
     # Consolidate parameter set. Command-line parameters overwrite file configuration
     gParameters = args_overwrite_config(args, fileParameters)
@@ -728,7 +730,7 @@ class Benchmark:
         # Parse has been split between arguments that are common with the default neon parser
         # and all the other options
         parser = self.parser
-        if self.framework is not 'neon':
+        if self.framework != 'neon':
             parser = get_default_neon_parser(parser)
         parser = get_common_parser(parser)
 
